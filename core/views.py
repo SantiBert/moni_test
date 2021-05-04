@@ -1,3 +1,4 @@
+import pdb
 import requests
 from django.shortcuts import redirect, render
 from django.http import HttpResponseRedirect
@@ -10,9 +11,6 @@ from django.contrib import messages
 from .models import Lending
 from .forms import LendingForm, LendingAdminForm
 
-api = "https://api.moni.com.ar/api/v4/scoring/pre-score/"
-headers = {"credential": "ZGpzOTAzaWZuc2Zpb25kZnNubm5u"}
-
 
 class LendingCreateView(CreateView):
     model = Lending
@@ -20,28 +18,31 @@ class LendingCreateView(CreateView):
     template_name = 'index.html'
     success_url = reverse_lazy('index')
 
-    def get_status(self, form, request):
+    def form_valid(self, form):
         # Consulta a la api
+        api = "https://api.moni.com.ar/api/v4/scoring/pre-score/"
+        headers = {"credential": "ZGpzOTAzaWZuc2Zpb25kZnNubm5u"}
         dni = form.cleaned_data.get('dni')
         url = api + str(dni)
-        data = requests.request("GET", url, headers=headers).json()
+        data = requests.get(url, headers=headers).json()
         # Si el prestamo es aprovado el estado del atributo pasa a True
         if data['status'] == 'approve':
             form.instance.status = True
-            messages.success(request, 'Su prestamo ha sido aprovado')
+            messages.success(self.request, 'Su prestamo ha sido aprobado :D')
         elif data['status'] == 'rejected':
             form.instance.status = False
-            messages.warning(request, 'Su prestamo NO ha sido aprovado')
+            messages.warning(
+                self.request, 'Su prestamo no ha sido aprobado :( ')
         else:
             form.instance.status = False
-            messages.error(request, 'Ha ocurrido un error')
-        # Si ocurre un erro el estado del atributo pasa a verdadero
+        # Si ocurre un error el estado del atributo pasa a verdadero
         if data['has_error'] == True:
             form.instance.error = True
+            messages.error(self.request, 'Ocurrió un error')
         else:
             form.instance.error = False
         form.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data(request=self.request, form=form))
 
 
 @method_decorator(login_required, name='dispatch')
