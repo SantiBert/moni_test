@@ -4,6 +4,7 @@
 {% block content %}
 
 {% block name %}Administrador de prestamos{% endblock %}
+{% if lendings %}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -40,4 +41,7 @@
     </tbody>
 </table>
 
+{% else %}
+<h1>No hay prestamos registrados</h1>
+{% endif %}
 {% endblock %}
