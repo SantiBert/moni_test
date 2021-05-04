@@ -13,6 +13,7 @@ from .forms import LendingForm, LendingAdminForm
 
 
 class LendingCreateView(CreateView):
+    # Vista inicial con el formulario para solicitar un prestamo
     model = Lending
     form_class = LendingForm
     template_name = 'index.html'
@@ -35,7 +36,7 @@ class LendingCreateView(CreateView):
                 self.request, 'Su prestamo no ha sido aprobado :( ')
         else:
             form.instance.status = False
-        # Si ocurre un error el estado del atributo pasa a verdadero
+        # Si ocurre un error el estado del atributo pasa a True
         if data['has_error'] == True:
             form.instance.error = True
             messages.error(self.request, 'Ocurrió un error')
@@ -47,10 +48,11 @@ class LendingCreateView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class AdministrationView(TemplateView):
+    # vista para el administrador, muestra el registro de prestamos, requiere inicio de sesición
     template_name = 'admin/administration.html'
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
+        # Agrega los prestamos al contexto
         context = super().get_context_data(**kwargs)
         context['lendings'] = Lending.objects.filter(is_active=True)
         return context
@@ -58,6 +60,7 @@ class AdministrationView(TemplateView):
 
 @method_decorator(login_required, name='dispatch')
 class LendingUpdateView(UpdateView):
+    # Vista para editar un prestamo, requiere inicia sesión
     model = Lending
     form_class = LendingAdminForm
     template_name = 'admin/lending_update_form.html'
@@ -66,7 +69,9 @@ class LendingUpdateView(UpdateView):
 
 
 class LendingDeleteView(View):
+    # Vista para eliminar un prestamo, requiere inicia sesión
     def get(self, request, slug, *args, **kwargs):
+        # Metodo que busca al prestamo seleccionado
         try:
             lending = Lending.objects.get(slug=slug)
         except:
@@ -77,6 +82,7 @@ class LendingDeleteView(View):
         return render(request, 'admin/lending_confirm_delete.html', context)
 
     def post(self, request, slug, *args, **kwargs):
+        # Metodo que elimina al prestamo. Nota: el objeto es desactivado pero no borrado de la base de datos.
         try:
             lending = Lending.objects.get(slug=slug)
             lending.is_active = not lending.is_active
