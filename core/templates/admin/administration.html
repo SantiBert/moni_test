@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+
+{% block name %}Administrador de prestamos{% endblock %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Monto</th>
+            <th scope="col">Status</th>
+            <th scope="col">Error</th>
+            <th scope="col">Dni</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Género</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lending in lendings %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ lending.last_name}}, {{ lending.name}}</td>
+            <td>{{ lending.amount}}</td>
+            <td>{% if lending.status is True %} Aprobado {% else %} No aprobado{% endif %}</td>
+            <td>{% if lending.error is True %} ERROR {% else %} Sin errores{% endif %}</td>
+            <td>{{ lending.dni}}</td>
+            <td>{{ lending.email}}</td>
+            <td>{{ lending.gender}}</td>
+            <td>
+                <a href="{% url 'updateLending' lending.slug %}" role="button"
+                    class="btn btn-secondary btn-sm btn-block">Editar</a>
+                <a href="{% url 'deleteLending' lending.slug %}" role="button"
+                    class="btn btn-danger btn-sm btn-block">Borrar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

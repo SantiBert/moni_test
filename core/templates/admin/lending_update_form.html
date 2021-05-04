@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Editar el prestamo de {{object.name}} {{object.last_name}}{% endblock %}
+{% block content %}
+{% block name %} Editar el prestamo de {{object.name}} {{object.last_name}}{% endblock %}
+<form action="" method="post">{% csrf_token %}
+    <fieldset>
+        <div class="form-group row">
+            {{form.as_table}}
+        </div>
+        <button type="submit" class="btn btn-primary">Aceptar</button>
+    </fieldset>
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Borrar prestamo de {{lending.name}} {{lending.last_name}}{% endblock %}
+{% block content %}
+<div class="title">
+    <h2>Borrar prestamo de {{lending.name}} {{lending.last_name}} </h2>
+</div>
+<form action="" method="post">{% csrf_token %}
+    <p>¿Estás seguro de que quieres borrar el prestamo de<b>"{{lending.name}} {{lending.last_name}}"</b>?</p>
+    <input type="submit" class="btn btn-primary btn-block" value="Sí, borrar" />
+</form>
+{% endblock %}
